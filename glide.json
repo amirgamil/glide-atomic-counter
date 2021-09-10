@@ -1,0 +1,15 @@
+{
+  "name": "Echo Column",
+  "description": "Echoes what you type.",
+  "author": "David Siegel <david@glideapps.com>",
+  "params": [
+    {
+      "name": "message",
+      "displayName": "Message",
+      "type": "string"
+    }
+  ],
+  "result": {
+    "type": "string"
+  }
+}

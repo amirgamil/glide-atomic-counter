@@ -35,6 +35,8 @@ function CounterPage() {
   }, []);
 
   async function inc() {
+    // Count optimisically
+    setCount(count ?? 0 + 1);
     const response = await fetch(`/api/inc?counter=${counter}`).then((x) =>
       x.json()
     );
@@ -42,6 +44,8 @@ function CounterPage() {
   }
 
   async function dec() {
+    // Count optimisically
+    setCount(count ?? 0 - 1);
     const response = await fetch(`/api/dec?counter=${counter}`).then((x) =>
       x.json()
     );
@@ -49,9 +53,9 @@ function CounterPage() {
   }
 
   return (
-    <div className="flex flex-col items-center p-10 space-y-4">
+    <div className="flex flex-col items-center p-6 space-y-4">
       <h1
-        className="h-40 mb-10 text-9xl"
+        className="mb-10 h-36 text-8xl"
         style={{ opacity: count === undefined ? 0 : 1 }}
       >
         {count}

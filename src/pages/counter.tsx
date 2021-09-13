@@ -49,7 +49,7 @@ function CounterPage() {
   }
 
   return (
-    <div className="flex flex-col items-center space-y-4">
+    <div className="flex flex-col items-center p-10 space-y-4">
       <h1
         className="h-40 mb-10 text-9xl"
         style={{ opacity: count === undefined ? 0 : 1 }}

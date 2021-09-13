@@ -1,5 +1,20 @@
 import { useEffect, useState } from "react";
 
+const Button: React.FC<{ onClick?: () => void; className?: string }> = (
+  props
+) => {
+  return (
+    <button
+      className={`py-6 text-2xl border rounded-lg shadow font-bold ${
+        props.className ?? ""
+      }`}
+      onClick={props.onClick}
+    >
+      {props.children}
+    </button>
+  );
+};
+
 function CounterPage() {
   const [counter, setCounter] = useState<string | undefined>(undefined);
   const [count, setCount] = useState<number | undefined>(undefined);
@@ -34,20 +49,20 @@ function CounterPage() {
   }
 
   return (
-    <div className="flex flex-col space-y-4 items-center">
+    <div className="flex flex-col items-center space-y-4">
       <h1
-        className="text-5xl mb-10"
+        className="h-40 mb-10 text-9xl"
         style={{ opacity: count === undefined ? 0 : 1 }}
       >
         {count}
       </h1>
-      <div className="grid grid-cols-2 gap-5">
-        <button className="rounded-lg border shadow p-4" onClick={dec}>
-          Decrement
-        </button>
-        <button className="rounded-lg border shadow p-4" onClick={inc}>
-          Increment
-        </button>
+      <div className="flex flex-col w-full space-y-8">
+        <Button onClick={inc} className="text-white bg-green-600">
+          + Count
+        </Button>
+        <Button onClick={dec} className="text-white bg-red-500">
+          – Count
+        </Button>
       </div>
     </div>
   );

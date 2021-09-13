@@ -36,22 +36,26 @@ function CounterPage() {
     setInterval(() => refresh(counter), 2500);
   }, []);
 
-  async function inc() {
+  function inc() {
     // Count optimisically
     setCount(count ?? 0 + 1);
-    const response = await fetch(`/api/inc?counter=${counter}`).then((x) =>
-      x.json()
-    );
-    setCount(response.count);
+    setTimeout(async () => {
+      const response = await fetch(`/api/inc?counter=${counter}`).then((x) =>
+        x.json()
+      );
+      setCount(response.count);
+    });
   }
 
-  async function dec() {
+  function dec() {
     // Count optimisically
     setCount(count ?? 0 - 1);
-    const response = await fetch(`/api/dec?counter=${counter}`).then((x) =>
-      x.json()
-    );
-    setCount(response.count);
+    setTimeout(async () => {
+      const response = await fetch(`/api/dec?counter=${counter}`).then((x) =>
+        x.json()
+      );
+      setCount(response.count);
+    });
   }
 
   return (

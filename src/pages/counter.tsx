@@ -7,10 +7,15 @@ function CounterPage() {
 
   const [count, setCount] = useState<number | undefined>(undefined);
 
-  useEffect(() => {
+  function refresh() {
     fetch(`/api/peek?counter=${counter}`)
       .then((x) => x.json())
       .then((x) => setCount(x.count));
+  }
+
+  useEffect(() => {
+    refresh();
+    setInterval(refresh, 1000);
   });
 
   async function inc() {

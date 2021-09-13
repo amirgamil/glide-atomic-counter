@@ -6,7 +6,7 @@ const Button: React.FC<{ onClick?: () => void; className?: string }> = (
 ) => {
   return (
     <button
-      className={`py-6 text-2xl border rounded-lg shadow font-bold ${
+      className={`py-6 text-2xl rounded-xl shadow font-bold ${
         props.className ?? ""
       }`}
       style={{ touchAction: "manipulation" }}
@@ -59,17 +59,17 @@ function CounterPage() {
   }
 
   return (
-    <div className="flex flex-col items-center p-6 space-y-4">
-      <div className="flex items-center py-20 h-28">
+    <div className="flex flex-col items-center p-6">
+      <div className="flex items-center h-60">
         {count !== undefined ? (
-          <h1 className="text-8xl">{count}</h1>
+          <h1 className="font-black text-9xl dark:text-white">{count}</h1>
         ) : (
-          <SVGLoaders.SpinningCircles stroke="#aaa" />
+          <SVGLoaders.Oval stroke="#666" />
         )}
       </div>
 
-      <div className="flex flex-col w-full space-y-8">
-        <Button onClick={inc} className="text-white bg-green-600">
+      <div className="flex flex-col w-full space-y-6">
+        <Button onClick={inc} className="text-white bg-green-500">
           + Count
         </Button>
         <Button onClick={dec} className="text-white bg-red-500">

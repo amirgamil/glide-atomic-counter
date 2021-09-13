@@ -1,21 +1,22 @@
-import { useRouter } from "next/dist/client/router";
 import { useEffect, useState } from "react";
 
 function CounterPage() {
-  const router = useRouter();
-  const counter = router.query.counter ?? "root";
-
+  const [counter, setCounter] = useState<string | undefined>(undefined);
   const [count, setCount] = useState<number | undefined>(undefined);
 
-  function refresh() {
-    fetch(`/api/peek?counter=${counter}`)
+  function refresh(localCounter = counter) {
+    fetch(`/api/peek?counter=${localCounter}`)
       .then((x) => x.json())
       .then((x) => setCount(x.count));
   }
 
   useEffect(() => {
-    refresh();
-    setInterval(refresh, 2500);
+    const params = new URLSearchParams(window.location.search);
+    const counter = params.get("counter") ?? "root";
+    setCounter(counter);
+
+    refresh(counter);
+    setInterval(() => refresh(counter), 2500);
   }, []);
 
   async function inc() {
@@ -40,6 +41,7 @@ function CounterPage() {
       >
         {count}
       </h1>
+      <caption>Counter: {counter}</caption>
       <div className="grid grid-cols-2 gap-5">
         <button className="rounded-lg border shadow p-4" onClick={dec}>
           Decrement

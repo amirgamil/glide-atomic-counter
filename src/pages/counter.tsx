@@ -8,6 +8,7 @@ const Button: React.FC<{ onClick?: () => void; className?: string }> = (
       className={`py-6 text-2xl border rounded-lg shadow font-bold ${
         props.className ?? ""
       }`}
+      style={{ touchAction: "manipulation" }}
       onClick={props.onClick}
     >
       {props.children}

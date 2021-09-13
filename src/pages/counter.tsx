@@ -15,8 +15,8 @@ function CounterPage() {
 
   useEffect(() => {
     refresh();
-    setInterval(refresh, 1000);
-  });
+    setInterval(refresh, 2500);
+  }, []);
 
   async function inc() {
     const response = await fetch(`/api/inc?counter=${counter}`).then((x) =>
@@ -34,7 +34,12 @@ function CounterPage() {
 
   return (
     <div className="flex flex-col space-y-4 items-center">
-      <h1 className="text-5xl mb-10">{count}</h1>
+      <h1
+        className="text-5xl mb-10"
+        style={{ opacity: count === undefined ? 0 : 1 }}
+      >
+        {count}
+      </h1>
       <div className="grid grid-cols-2 gap-5">
         <button className="rounded-lg border shadow p-4" onClick={dec}>
           Decrement

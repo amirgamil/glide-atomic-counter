@@ -41,7 +41,6 @@ function CounterPage() {
       >
         {count}
       </h1>
-      <caption>Counter: {counter}</caption>
       <div className="grid grid-cols-2 gap-5">
         <button className="rounded-lg border shadow p-4" onClick={dec}>
           Decrement

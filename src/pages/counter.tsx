@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import * as SVGLoaders from "svg-loaders-react";
 
 const Button: React.FC<{ onClick?: () => void; className?: string }> = (
   props
@@ -55,12 +56,14 @@ function CounterPage() {
 
   return (
     <div className="flex flex-col items-center p-6 space-y-4">
-      <h1
-        className="flex items-center mb-10 h-28 text-8xl"
-        style={{ opacity: count === undefined ? 0 : 1 }}
-      >
-        {count}
-      </h1>
+      <div className="flex items-center py-20 h-28">
+        {count !== undefined ? (
+          <h1 className="text-8xl">{count}</h1>
+        ) : (
+          <SVGLoaders.Rings className="text-gray-400" />
+        )}
+      </div>
+
       <div className="flex flex-col w-full space-y-8">
         <Button onClick={inc} className="text-white bg-green-600">
           + Count

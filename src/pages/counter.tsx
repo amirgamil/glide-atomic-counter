@@ -64,7 +64,7 @@ function CounterPage() {
         {count !== undefined ? (
           <h1 className="text-8xl">{count}</h1>
         ) : (
-          <SVGLoaders.Rings className="text-gray-400" />
+          <SVGLoaders.SpinningCircles stroke="#aaa" />
         )}
       </div>
 

@@ -34,6 +34,7 @@ function CounterPage() {
     const counter = params.get("counter") ?? "root";
     //default to 5000 if not set
     const maxParam = parseInt(params.get("max") ?? "5000");
+    console.log(maxParam, params);
     setMax(maxParam);
     setCounter(counter);
     console.log("set: ", maxCap);

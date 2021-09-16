@@ -19,17 +19,22 @@ const Button: React.FC<{ onClick?: () => void; className?: string }> = (
 
 function CounterPage() {
   const [counter, setCounter] = useState<string | undefined>(undefined);
+  const [max, setMax] = useState<number | undefined>(undefined);
   const [count, setCount] = useState<number | undefined>(undefined);
+
 
   function refresh(localCounter = counter) {
     fetch(`/api/peek?counter=${localCounter}`)
       .then((x) => x.json())
-      .then((x) => setCount(x.count));
+      .then((x) => setCount(max - x.count));
   }
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const counter = params.get("counter") ?? "root";
+    //default to 5000 if not set
+    const maxParam = parseInt(params.get("max") ?? "5000");
+    setMax(maxParam);
     setCounter(counter);
 
     refresh(counter);
@@ -70,10 +75,10 @@ function CounterPage() {
 
       <div className="flex flex-col w-full space-y-6">
         <Button onClick={inc} className="text-white bg-green-500">
-          + Check In
+          + Check-in
         </Button>
         <Button onClick={dec} className="text-white bg-red-500">
-          – Checkout Out
+          – Check-out
         </Button>
       </div>
     </div>

@@ -41,24 +41,24 @@ function CounterPage() {
     setInterval(() => refresh(counter), 2500);
   }, []);
 
-  //increments number of seats taken, decrement number of seats available
-  function checkIn() {
+  //icrement the number of seats taken (decrement available sets)
+  function inc() {
     // Count optimisically
     setCount(count ?? 0 - 1);
     setTimeout(async () => {
-      const response = await fetch(`/api/dec?counter=${counter}`).then((x) =>
+      const response = await fetch(`/api/inc?counter=${counter}`).then((x) =>
         x.json()
       );
-      setCount(response.count);
+      setCount(max - response.count);
     });
   }
 
-  //decrements number of seats taken, increment number of seats available
-  function checkOut() {
+  //decrement the number of seats taken (decrement available sets)
+  function dec() {
     // Count optimisically
     setCount(count ?? 0 + 1);
     setTimeout(async () => {
-      const response = await fetch(`/api/inc?counter=${counter}`).then((x) =>
+      const response = await fetch(`/api/dec?counter=${counter}`).then((x) =>
         x.json()
       );
       setCount(response.count);
@@ -76,10 +76,10 @@ function CounterPage() {
       </div>
 
       <div className="flex flex-col w-full space-y-6">
-        <Button onClick={checkIn} className="text-white bg-green-500">
+        <Button onClick={inc} className="text-white bg-green-500">
           + Check-in
         </Button>
-        <Button onClick={checkOut} className="text-white bg-red-500">
+        <Button onClick={dec} className="text-white bg-red-500">
           – Check-out
         </Button>
       </div>

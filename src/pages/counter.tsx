@@ -34,10 +34,8 @@ function CounterPage() {
     const counter = params.get("counter") ?? "root";
     //default to 5000 if not set
     const maxParam = parseInt(params.get("max") ?? "5000");
-    console.log(maxParam, params);
     setMax(maxParam);
     setCounter(counter);
-    console.log("set: ", maxCap);
     
     refresh(counter, maxParam);
     setInterval(() => refresh(counter, maxParam), 2500);
@@ -51,7 +49,6 @@ function CounterPage() {
       const response = await fetch(`/api/inc?counter=${counter}`).then((x) =>
         x.json()
       );
-      console.log("inc: ", maxCap);
       setCount(maxCap - response.count);
     });
   }
@@ -64,11 +61,10 @@ function CounterPage() {
       const response = await fetch(`/api/dec?counter=${counter}`).then((x) =>
         x.json()
       );
-      console.log("dec: ", maxCap);
       setCount(maxCap- response.count);
     });
   }
-  const width = Math.round(((maxCap - (count ?? 0)) / maxCap) * 100);
+  const widthProg = Math.round(((maxCap - (count ?? 0)) / maxCap) * 100);
   return (
     <div className="flex flex-col items-center p-6">
       <div className="flex items-center h-60">
@@ -80,7 +76,7 @@ function CounterPage() {
       </div>
       <div className="relative pt-1">
         <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blueGray-200">
-          <div style={"width:" + width} class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blueGray-500"></div>
+          <div style={{ width: widthProg }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blueGray-500"></div>
         </div>
       </div>
 

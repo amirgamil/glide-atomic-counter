@@ -40,7 +40,7 @@ function CounterPage() {
     console.log("set: ", maxCap);
     
     refresh(counter);
-    setInterval(() => refresh(counter, maxCap), 2500);
+    setInterval(() => refresh(counter, maxParam), 2500);
   }, []);
 
   //icrement the number of seats taken (decrement available sets)

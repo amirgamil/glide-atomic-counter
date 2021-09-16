@@ -9,7 +9,7 @@ const Button: React.FC<{ onClick?: () => void; className?: string }> = (
       className={`py-6 text-2xl rounded-xl shadow font-bold ${
         props.className ?? ""
       }`}
-      style={{ touchAction: "manipulation" }}
+      style={{ touchAction: "manipulation", userSelect: "none" }}
       onClick={props.onClick}
     >
       {props.children}
@@ -64,7 +64,8 @@ function CounterPage() {
       setCount(maxCap- response.count);
     });
   }
-  const widthProg = Math.round(((maxCap - (count ?? 0)) / maxCap) * 100).toLocaleString() + "%";
+  const widthProg = Math.round(((count ?? 0) / maxCap) * 100).toLocaleString() + "%";
+  console.log(widthProg);
   return (
     <div className="flex flex-col items-center p-6">
       <div className="flex items-center h-60">

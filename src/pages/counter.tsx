@@ -23,7 +23,7 @@ function CounterPage() {
   const [count, setCount] = useState<number | undefined>(undefined);
 
 
-  function refresh(localCounter = counter) {
+  function refresh(localCounter = counter, maxCapacity = max) {
     fetch(`/api/peek?counter=${localCounter}`)
       .then((x) => x.json())
       .then((x) => setCount(max - x.count));
@@ -38,7 +38,7 @@ function CounterPage() {
     setCounter(counter);
 
     refresh(counter);
-    setInterval(() => refresh(counter), 2500);
+    setInterval(() => refresh(counter, max), 2500);
   }, []);
 
   //icrement the number of seats taken (decrement available sets)

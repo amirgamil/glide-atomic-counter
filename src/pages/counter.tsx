@@ -19,14 +19,14 @@ const Button: React.FC<{ onClick?: () => void; className?: string }> = (
 
 function CounterPage() {
   const [counter, setCounter] = useState<string | undefined>(undefined);
-  const [max, setMax] = useState<number | undefined>(undefined);
+  const [max, setMax] = useState<number>(0);
   const [count, setCount] = useState<number | undefined>(undefined);
 
 
   function refresh(localCounter = counter) {
     fetch(`/api/peek?counter=${localCounter}`)
       .then((x) => x.json())
-      .then((x) => setCount(max ?? 5000 - x.count));
+      .then((x) => setCount(max - x.count));
   }
 
   useEffect(() => {
@@ -41,22 +41,24 @@ function CounterPage() {
     setInterval(() => refresh(counter), 2500);
   }, []);
 
-  function inc() {
+  //increments number of seats taken, decrement number of seats available
+  function checkIn() {
     // Count optimisically
-    setCount(count ?? 0 + 1);
+    setCount(count ?? 0 - 1);
     setTimeout(async () => {
-      const response = await fetch(`/api/inc?counter=${counter}`).then((x) =>
+      const response = await fetch(`/api/dec?counter=${counter}`).then((x) =>
         x.json()
       );
       setCount(response.count);
     });
   }
 
-  function dec() {
+  //decrements number of seats taken, increment number of seats available
+  function checkOut() {
     // Count optimisically
-    setCount(count ?? 0 - 1);
+    setCount(count ?? 0 + 1);
     setTimeout(async () => {
-      const response = await fetch(`/api/dec?counter=${counter}`).then((x) =>
+      const response = await fetch(`/api/inc?counter=${counter}`).then((x) =>
         x.json()
       );
       setCount(response.count);
@@ -74,10 +76,10 @@ function CounterPage() {
       </div>
 
       <div className="flex flex-col w-full space-y-6">
-        <Button onClick={inc} className="text-white bg-green-500">
+        <Button onClick={checkIn} className="text-white bg-green-500">
           + Check-in
         </Button>
-        <Button onClick={dec} className="text-white bg-red-500">
+        <Button onClick={checkOut} className="text-white bg-red-500">
           – Check-out
         </Button>
       </div>

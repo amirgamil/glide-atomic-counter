@@ -70,10 +70,10 @@ function CounterPage() {
 
       <div className="flex flex-col w-full space-y-6">
         <Button onClick={inc} className="text-white bg-green-500">
-          + Count
+          + Check In
         </Button>
         <Button onClick={dec} className="text-white bg-red-500">
-          – Count
+          – Checkout Out
         </Button>
       </div>
     </div>

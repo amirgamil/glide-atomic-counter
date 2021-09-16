@@ -61,7 +61,7 @@ function CounterPage() {
       const response = await fetch(`/api/dec?counter=${counter}`).then((x) =>
         x.json()
       );
-      setCount(response.count);
+      setCount(max - response.count);
     });
   }
 

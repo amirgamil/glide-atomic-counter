@@ -19,11 +19,11 @@ const Button: React.FC<{ onClick?: () => void; className?: string }> = (
 
 function CounterPage() {
   const [counter, setCounter] = useState<string | undefined>(undefined);
-  const [max, setMax] = useState<number>(0);
+  const [maxCap, setMax] = useState<number>(0);
   const [count, setCount] = useState<number | undefined>(undefined);
 
 
-  function refresh(localCounter = counter, maxCapacity = max) {
+  function refresh(localCounter = counter, maxCapacity = maxCap) {
     fetch(`/api/peek?counter=${localCounter}`)
       .then((x) => x.json())
       .then((x) => setCount(maxCapacity - x.count));
@@ -36,9 +36,10 @@ function CounterPage() {
     const maxParam = parseInt(params.get("max") ?? "5000");
     setMax(maxParam);
     setCounter(counter);
-
+    console.log("set: ", maxCap);
+    
     refresh(counter);
-    setInterval(() => refresh(counter, max), 2500);
+    setInterval(() => refresh(counter, maxCap), 2500);
   }, []);
 
   //icrement the number of seats taken (decrement available sets)
@@ -49,7 +50,8 @@ function CounterPage() {
       const response = await fetch(`/api/inc?counter=${counter}`).then((x) =>
         x.json()
       );
-      setCount(max - response.count);
+      console.log("inc: ", maxCap);
+      setCount(maxCap - response.count);
     });
   }
 
@@ -61,7 +63,8 @@ function CounterPage() {
       const response = await fetch(`/api/dec?counter=${counter}`).then((x) =>
         x.json()
       );
-      setCount(max - response.count);
+      console.log("dec: ", maxCap);
+      setCount(maxCap- response.count);
     });
   }
 
@@ -73,6 +76,9 @@ function CounterPage() {
         ) : (
           <SVGLoaders.Oval stroke="#666" />
         )}
+      </div>
+      <div>
+
       </div>
 
       <div className="flex flex-col w-full space-y-6">

@@ -26,7 +26,7 @@ function CounterPage() {
   function refresh(localCounter = counter) {
     fetch(`/api/peek?counter=${localCounter}`)
       .then((x) => x.json())
-      .then((x) => setCount(max - x.count));
+      .then((x) => setCount(max ?? 5000 - x.count));
   }
 
   useEffect(() => {

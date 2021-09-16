@@ -64,7 +64,7 @@ function CounterPage() {
       setCount(maxCap- response.count);
     });
   }
-  const widthProg = Math.round(((maxCap - (count ?? 0)) / maxCap) * 100);
+  const widthProg = Math.round(((maxCap - (count ?? 0)) / maxCap) * 100).toLocaleString() + "%";
   return (
     <div className="flex flex-col items-center p-6">
       <div className="flex items-center h-60">

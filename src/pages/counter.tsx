@@ -74,6 +74,7 @@ function CounterPage() {
           <SVGLoaders.Oval stroke="#666" />
         )}
       </div>
+      <div style={{width: widthProg, height: "5px", backgroundColor: "red"}}></div>
       <div className="relative pt-1">
         <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-blueGray-200">
           <div style={{ width: widthProg }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blueGray-500"></div>

@@ -67,7 +67,7 @@ export class CounterClient {
   }
 }
 
-export async function connect() {
+function setUpClient() {
   const client = createClient({
     socket: {
       url: process.env.REDIS!,
@@ -77,8 +77,24 @@ export async function connect() {
   client.on("error", (err: any) => {
     throw new Error(`Redis Client Error ${err}`);
   });
+  return client;
+}
 
+export async function connect() {
+  const client = setUpClient();
   await client.connect();
-
   return new CounterClient(client);
 }
+
+export async function connectSavedSeats() {
+  const client = setUpClient();
+  await client.connect();
+  return client;
+}
+/**** 
+written here for documentation
+How do we store the data we need in Redis?
+- Store a sorted set for each counter (sorted by an integer representing the time via date.getTime) using their seatID as the value (obleviates the
+  need for storing the date separately)
+- Also store a set of the keys to ensure we don't reserve duplicates
+*****/

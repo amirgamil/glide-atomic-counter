@@ -83,7 +83,6 @@ function CounterPage() {
   console.log(widthProg);
   return (
     <div className="flex flex-col items-center p-6">
-      <h5>Hole {counter}</h5>
       <div
         style={{
           flexDirection: "column",

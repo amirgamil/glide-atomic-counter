@@ -1,5 +1,5 @@
 import { allowCors } from "../../glide-next";
-import { connectSavedSeats } from "../../redis";
+import { connectSavedSeats, clearSeatsInRange } from "../../redis";
 
 //30 minutes in milliseconds for our update calculation
 const THIRTY_MINUTES = 30 * 60 * 1000;
@@ -14,15 +14,16 @@ export default allowCors(async (req, res) => {
     const date = new Date();
     date.setMinutes(date.getMinutes() - 30);
     const currentTimeStamp = date.getTime();
-    //confirm this seat has already been reserved
-    //in order to make this action atomic (and ensure we don't lose a key written in the same, use multi and exec block)
-    client.multi();
-    //first get the actual elements and remove them from our hash map since they no longer exist
+    date.setMinutes(date.getMinutes() + 25);
+    const expiringSoon = date.getTime();
+    clearSeatsInRange(client, counter, -Infinity, currentTimeStamp);
     client
-      .zRangeWithScores(counter, -Infinity, currentTimeStamp)
-      .then((data) => data.map((el) => client.del(el.value)));
-    //remove elements from our sorted set
-    client.zRemRangeByScore(counter, -Infinity, currentTimeStamp);
-    client.exec();
+      .zRangeWithScores(counter, expiringSoon, date.getTime())
+      .then((data) =>
+        res.send({
+          expiringSoon: data.length,
+          savedSeats: client.zCard(counter),
+        })
+      );
   }
 });

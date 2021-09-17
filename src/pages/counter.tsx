@@ -22,6 +22,7 @@ function CounterPage() {
   const [maxCap, setMax] = useState<number>(0);
   const [count, setCount] = useState<number | undefined>(4500);
   const [savedSeats, setSavedSeats] = useState<number>(0);
+  const [expiringSoon, setExpiringSoon] = useState<number>(0);
 
   function refresh(localCounter = counter, maxCapacity = maxCap) {
     fetch(`/api/peek?counter=${localCounter}`)
@@ -32,7 +33,10 @@ function CounterPage() {
   function refreshSavedSeats() {
     fetch(`api/updateReserved?counter=${counter}`)
       .then((x) => x.json())
-      .then((x) => setSavedSeats(x.savedSeats));
+      .then((x) => {
+        setSavedSeats(x.savedSeats);
+        setExpiringSoon(x.expiringSoon);
+      });
   }
 
   useEffect(() => {
@@ -45,32 +49,11 @@ function CounterPage() {
     //will have to hit the reserve seats endpoint here
     setSavedSeats(0);
     refresh(counter, maxParam);
-    setInterval(() => refresh(counter, maxParam), 2500);
+    setInterval(() => {
+      refresh(counter, maxParam);
+      refreshSavedSeats();
+    }, 2500);
   }, []);
-
-  function unreserveSeat(seatID: string) {
-    if (savedSeats > 0) {
-      setSavedSeats(savedSeats ?? 0 - 1);
-      setTimeout(async () => {
-        const response = await fetch(
-          `/api/unreserve?counter=${counter}&seatID=${seatID}`
-        ).then((x) => x.json());
-        setSavedSeats(response.savedSeats);
-      });
-    }
-  }
-
-  function reserveSeat(seatID: string) {
-    if (savedSeats < (counter ?? maxCap)) {
-      setSavedSeats(savedSeats ?? 0 + 1);
-      setTimeout(async () => {
-        const response = await fetch(
-          `/api/reserve?counter=${counter}&seatID=${seatID}`
-        ).then((x) => x.json());
-        setSavedSeats(response.savedSeats);
-      });
-    }
-  }
 
   //icrement the number of seats taken (decrement available sets)
   function inc() {
@@ -100,6 +83,7 @@ function CounterPage() {
   console.log(widthProg);
   return (
     <div className="flex flex-col items-center p-6">
+      <h5>Hole {counter}</h5>
       <div
         style={{
           flexDirection: "column",
@@ -109,7 +93,7 @@ function CounterPage() {
         className="flex items-center"
       >
         {count !== undefined ? (
-          <h2 className="font-black text-9xl dark:text-white">{count}</h2>
+          <h3 className="font-black text-7xl dark:text-white">{count}</h3>
         ) : (
           <SVGLoaders.Oval stroke="#666" />
         )}
@@ -127,8 +111,8 @@ function CounterPage() {
           <div
             style={{
               width: "100%",
-              height: "5px",
-              backgroundColor: "grey",
+              height: "8px",
+              backgroundColor: "rgb(220,220,220, 0.7)",
               borderRadius: "5px",
             }}
           >
@@ -136,15 +120,20 @@ function CounterPage() {
               style={{
                 width: widthProg,
                 backgroundColor: "red",
-                height: "5px",
+                height: "8px",
+                borderRadius: "5px",
               }}
             ></div>
           </div>
         </div>
         <div style={{ width: "100%" }}>
-          <ul style={{ width: "100%" }}>
-            <li>Seats Taken: {maxCap - (count ?? 0)}</li>
-            <li>Seats Saved: {savedSeats}</li>
+          <ul style={{ width: "100%", lineHeight: "35px" }}>
+            <li style={{ borderBottom: "2px solid rgb(220,220,220, 0.7)" }}>
+              Seats Taken: {maxCap - (count ?? 0)}
+            </li>
+            <li style={{ borderBottom: "2px solid rgb(220,220,220, 0.7)" }}>
+              Seats Saved: {savedSeats}
+            </li>
             <li>Saves Expiring Soon: {savedSeats}</li>
           </ul>
         </div>

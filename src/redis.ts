@@ -1,6 +1,6 @@
 import { createClient } from "redis";
 import { RedisClientType } from "redis/dist/lib/client";
-import { RedisModules } from "redis/dist/lib/commands";
+import { RedisModules, RedisModule } from "redis/dist/lib/commands";
 import { RedisLuaScripts } from "redis/dist/lib/lua-script";
 
 export type Counter = string;
@@ -91,6 +91,24 @@ export async function connectSavedSeats() {
   await client.connect();
   return client;
 }
+
+export function clearSeatsInRange(
+  client: RedisClientType<Record<string, RedisModule>, RedisLuaScripts>,
+  counter: string,
+  min: number,
+  max: number
+) {
+  //in order to make this action atomic (and ensure we don't lose a key written in the same, use multi and exec block)
+  client.multi();
+  //first get the actual elements and remove them from our hash map since they no longer exist
+  client
+    .zRangeWithScores(counter, min, max)
+    .then((data) => data.map((el) => client.del(el.value)));
+  //remove elements from our sorted set
+  client.zRemRangeByScore(counter, min, max);
+  client.exec();
+}
+
 /**** 
 written here for documentation
 How do we store the data we need in Redis?

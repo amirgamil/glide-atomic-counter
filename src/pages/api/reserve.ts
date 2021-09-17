@@ -13,13 +13,14 @@ export default allowCors(async (req, res) => {
     const timestamp = new Date();
     //check if this seat has already been reserved
     if (client.exists(seatID)) {
-      res.send({reservedSeats: client.zCount(seatID, -Infinity, Infinity)})
+      res.send({reservedSeats: client.zCount(counter, -Infinity, Infinity)})
     } else {
       client.set(seatID, "1");
       //get current timestamp as an integer
       const intTimestamp = new Date().getTime();
       //add it to sorted set for this specific counter
       client.zAdd(counter, {score: intTimestamp, value: seatID});
+      res.send({reservedSeats: client.zCount(counter, -Infinity, Infinity)})
     }
   }
 

@@ -12,7 +12,7 @@ export default allowCors(async (req, res) => {
     const client = await connectSavedSeats();
     //get time 30 minutes ago - any date <= this time should be removed
     const date = new Date();
-    date.setMinutes(date.getMinutes() + 30);
+    date.setMinutes(date.getMinutes() - 30);
     const currentTimeStamp = date.getTime();
     //confirm this seat has already been reserved
     //in order to make this action atomic (and ensure we don't lose a key written in the same, use multi and exec block)

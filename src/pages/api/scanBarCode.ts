@@ -11,7 +11,8 @@ export default allowCors(async (req, res) => {
     const client = await connectSavedSeats();
     const timestamp = new Date().getTime();
     //if this seat has already been reserved, unreserve it
-    if (client.exists(seatID)) {
+    const exists = await client.exists(seatID);
+    if (exists) {
       const globalKey = `${counter}_current`;
       //update the globals we need for tracking before removing
       const numReserved = await client.hGet(globalKey, "num_reserved_intime");

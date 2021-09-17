@@ -164,7 +164,8 @@ export async function checkForSnapShot(
   counter: string
 ) {
   let shouldSnapshot = false;
-  if (client.exists(`last_snapshot_${counter}`)) {
+  const exists = await client.exists(`last_snapshot_${counter}`);
+  if (exists) {
     const lastDate = await client.get(`last_snapshot_${counter}`);
     const lastSnapTime = new Date(lastDate);
     const currentTime = new Date();

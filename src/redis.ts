@@ -96,5 +96,5 @@ written here for documentation
 How do we store the data we need in Redis?
 - Store a sorted set for each counter (sorted by an integer representing the time via date.getTime) using their seatID as the value (obleviates the
   need for storing the date separately)
-- Also store a set of the keys to ensure we don't reserve duplicates
+- Also store a set of the seatID keys to ensure we don't reserve duplicates
 *****/

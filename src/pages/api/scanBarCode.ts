@@ -1,5 +1,5 @@
 import { allowCors } from "../../glide-next";
-import { connectSavedSeats } from "../../redis";
+import { connectSavedSeats, checkForSnapShot } from "../../redis";
 
 export default allowCors(async (req, res) => {
   const counter =
@@ -44,13 +44,6 @@ export default allowCors(async (req, res) => {
       client.zAdd(counter, { score: timestamp, value: seatID });
       res.send({ reservedSeats: client.zCard(counter) });
     }
+    checkForSnapShot(client, counter);
   }
 });
-
-//get time from
-function getTimeSinceReserved(
-  client: RedisClientType<Record<string, RedisModule>, RedisLuaScripts>,
-  seatID: string,
-  counter: string,
-  globalKey: string
-): int {}

@@ -1,5 +1,9 @@
 import { allowCors } from "../../glide-next";
-import { connectSavedSeats, clearSeatsInRange } from "../../redis";
+import {
+  connectSavedSeats,
+  clearSeatsInRange,
+  checkForSnapShot,
+} from "../../redis";
 
 //30 minutes in milliseconds for our update calculation
 const THIRTY_MINUTES = 30 * 60 * 1000;
@@ -17,13 +21,15 @@ export default allowCors(async (req, res) => {
     date.setMinutes(date.getMinutes() + 25);
     const expiringSoon = date.getTime();
     clearSeatsInRange(client, counter, -Infinity, currentTimeStamp);
-    client
-      .zRangeWithScores(counter, expiringSoon, date.getTime())
-      .then((data) =>
-        res.send({
-          expiringSoon: data.length,
-          savedSeats: client.zCard(counter),
-        })
-      );
+    const data = await client.zRangeWithScores(
+      counter,
+      expiringSoon,
+      date.getTime()
+    );
+    res.send({
+      expiringSoon: data.length,
+      savedSeats: client.zCard(counter),
+    });
+    checkForSnapShot(client, counter);
   }
 });

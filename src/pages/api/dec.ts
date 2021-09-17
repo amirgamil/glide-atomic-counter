@@ -1,5 +1,5 @@
 import { allowCors } from "../../glide-next";
-import { connect } from "../../redis";
+import { checkForSnapShot, connect } from "../../redis";
 
 export default allowCors(async (req, res) => {
   const counter =
@@ -8,4 +8,5 @@ export default allowCors(async (req, res) => {
   const count = await client.decrement(counter);
   await client.disconnect();
   res.send({ count });
+  checkForSnapShot(client.getClient(), counter);
 });

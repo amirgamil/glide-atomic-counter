@@ -137,8 +137,15 @@ export async function createSnapshot(
   let seatsReserved = await client.zCard(counter);
   let expiredReservations =
     (await client.hGet(globalCounterKey, "num_expired")) ?? "0";
-  let averageReservationTime =
-    (await client.hGet(globalCounterKey, "average_reservation_time")) ?? "0";
+  let numReservedInTime = parseInt(
+    (await client.hGet(globalCounterKey, "num_reserved_intime")) ?? "1"
+  );
+  let totalTimeReserved = parseInt(
+    (await client.hGet(globalCounterKey, "total_time_reserved")) ?? "1"
+  );
+  let averageReservationTime = Math.floor(
+    numReservedInTime / totalTimeReserved
+  );
   let seatsTaken = (await client.hGet(globalCounterKey, "num_taken")) ?? "0";
   //clear previous global info for this counter to prepare for new snapshot
   await client.hSet(newSnapshotKey, {
@@ -148,7 +155,7 @@ export async function createSnapshot(
     average_reservation_time: averageReservationTime,
   });
   //update new last snapshot time
-  await client.set(`last_snapshot_${counter}`, `currentTime.getDate()`);
+  await client.set(`last_snapshot_${counter}`, `${currentTime.getDate()}`);
 }
 
 const HOUR = 1000 * 60 * 60;

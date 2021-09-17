@@ -14,7 +14,7 @@ export default allowCors(async (req, res) => {
     if (client.exists(seatID)) {
       const globalKey = `${counter}_current`;
       //update the globals we need for tracking before removing
-      const numReserved = await client.hGet(globalKey, "num_reserved_in_time");
+      const numReserved = await client.hGet(globalKey, "num_reserved_intime");
       const totalTimeSoFar =
         (await client.hGet(globalKey, "total_time_reserved")) ?? "0";
       const updatedNumReserved = parseInt(numReserved ?? "0", 10) + 1;

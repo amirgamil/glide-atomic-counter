@@ -50,12 +50,20 @@ export class CounterClient {
 
   public async increment(counter: Counter) {
     const basicCount = basicCountKey(counter);
-    return await this.client.incr(basicCount);
+    const newCount = await this.client.incr(basicCount);
+    this.client.hSet(`${counter}_current`, { num_taken: newCount });
+    return newCount;
   }
 
   public async decrement(counter: Counter) {
     const basicCount = basicCountKey(counter);
-    return await this.client.decr(basicCount);
+    const newCount = await this.client.decr(basicCount);
+    this.client.hSet(`${counter}_current`, { num_taken: newCount });
+    return newCount;
+  }
+
+  public getClient() {
+    return this.client;
   }
 
   public async getNodes(counter: Counter) {
@@ -103,10 +111,67 @@ export function clearSeatsInRange(
   //first get the actual elements and remove them from our hash map since they no longer exist
   client
     .zRangeWithScores(counter, min, max)
-    .then((data) => data.map((el) => client.del(el.value)));
+    .then((data) => data.forEach((el) => client.del(el.value)));
   //remove elements from our sorted set
   client.zRemRangeByScore(counter, min, max);
   client.exec();
+}
+
+//Store global time of last snapshot as last_snapshot_<counter>
+
+/*** All snapshots are saved in Redis as hashmaps
+ * with:
+ * key: Snapshot <current counter>_<current day as number>_<current hour in local time>
+ * and fields:
+ *  seats_taken: int
+ *  seats_reserved: int
+ *  expired_reservations: int
+ *  average_reservation_time: int ***/
+export async function createSnapshot(
+  client: RedisClientType<Record<string, RedisModule>, RedisLuaScripts>,
+  counter: string
+) {
+  const currentTime = new Date();
+  const globalCounterKey = counter + "_current";
+  const newSnapshotKey = `${counter}_${currentTime.getDay()}_${currentTime.getHours()}`;
+  let seatsReserved = await client.zCard(counter);
+  let expiredReservations =
+    (await client.hGet(globalCounterKey, "num_expired")) ?? "0";
+  let averageReservationTime =
+    (await client.hGet(globalCounterKey, "average_reservation_time")) ?? "0";
+  let seatsTaken = (await client.hGet(globalCounterKey, "num_taken")) ?? "0";
+  //clear previous global info for this counter to prepare for new snapshot
+  await client.hSet(newSnapshotKey, {
+    seats_taken: seatsTaken,
+    seats_reserved: `${seatsReserved}`,
+    expired_reservations: expiredReservations,
+    average_reservation_time: averageReservationTime,
+  });
+  //update new last snapshot time
+  await client.set(`last_snapshot_${counter}`, `currentTime.getDate()`);
+}
+
+const HOUR = 1000 * 60 * 60;
+export async function checkForSnapShot(
+  client: RedisClientType<Record<string, RedisModule>, RedisLuaScripts>,
+  counter: string
+) {
+  let shouldSnapshot = false;
+  if (client.exists(`last_snapshot_${counter}`)) {
+    const lastDate = await client.get(`last_snapshot_${counter}`);
+    const lastSnapTime = new Date(lastDate);
+    const currentTime = new Date();
+    const diffTime = currentTime.valueOf() - lastSnapTime.valueOf();
+    if (diffTime > HOUR) {
+      shouldSnapshot = true;
+    }
+  } else {
+    //first time
+    shouldSnapshot = true;
+  }
+  if (shouldSnapshot) {
+    createSnapshot(client, counter);
+  }
 }
 
 /**** 
@@ -115,4 +180,14 @@ How do we store the data we need in Redis?
 - Store a sorted set for each counter (sorted by an integer representing the time via date.getTime) using their seatID as the value (obleviates the
   need for storing the date separately)
 - Also store a set of the seatID keys to ensure we don't reserve duplicates
+- Store a hashmap of each <counter>_current which is needed to store global info at any point in time
+for the snapshots. Hashmap looks like this
+  key: <counter>_current
+  num_expired: int
+  //need the two variables to calculate the average time
+  //num_reserved_intime = number of people who reserved who then checked back
+  num_reserved_intime: int
+  total_time_reserved: int
+  num_taken: int
+- Store global time of last snapshot as last_snapshot_<counter>
 *****/
